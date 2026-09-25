@@ -29,8 +29,14 @@ export function Auth({ onSuccess }: AuthProps) {
           password: formData.password,
         });
       } else {
+        // Register the user (backend doesn't return token)
         await authService.register({
           name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
+        // Auto-login after successful registration
+        await authService.login({
           email: formData.email,
           password: formData.password,
         });

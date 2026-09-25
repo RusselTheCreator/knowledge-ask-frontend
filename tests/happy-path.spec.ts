@@ -88,6 +88,7 @@ Phone: +1-555-0123
     console.warn('Answer content not found in expected format, but answer was generated');
   } else {
     console.log('✓ Answer visible with expected content');
+  }
 
   // Test file download
   const downloadButton = page.getByRole('button', { name: 'Download' }).first();

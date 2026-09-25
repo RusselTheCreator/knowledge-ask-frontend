@@ -7,7 +7,15 @@ export const askService = {
   },
 
   history: async (): Promise<Ask[]> => {
-    return api.get<Ask[]>('/api/ask/history');
+    try {
+      const result = await api.get<Ask[]>('/api/ask/history');
+      // Backend might return error object instead of array for new users
+      return Array.isArray(result) ? result : [];
+    } catch (error) {
+      // Return empty array on error - new users have no history
+      console.warn('History endpoint failed, returning empty history:', error);
+      return [];
+    }
   },
 
   get: async (id: number): Promise<Ask> => {

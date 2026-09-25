@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { authService } from '../services/auth';
 import type { ApiError } from '../services/api';
 
@@ -11,34 +11,38 @@ export function Auth({ onSuccess }: AuthProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  // Use controlled input only for name field (not sensitive)
+  const [name, setName] = useState('');
+  
+  // Use uncontrolled inputs with refs for email and password
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
+    const email = emailRef.current?.value || '';
+    const password = passwordRef.current?.value || '';
+
     try {
       if (isLogin) {
         await authService.login({
-          email: formData.email,
-          password: formData.password,
+          email,
+          password,
         });
       } else {
         // Register the user (backend doesn't return token)
         await authService.register({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
+          name,
+          email,
+          password,
         });
         // Auto-login after successful registration
         await authService.login({
-          email: formData.email,
-          password: formData.password,
+          email,
+          password,
         });
       }
       onSuccess();
@@ -48,10 +52,6 @@ export function Auth({ onSuccess }: AuthProps) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
@@ -69,8 +69,8 @@ export function Auth({ onSuccess }: AuthProps) {
               <input
                 type="text"
                 name="name"
-                value={formData.name}
-                onChange={handleChange}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required={!isLogin}
                 style={styles.input}
               />
@@ -82,8 +82,8 @@ export function Auth({ onSuccess }: AuthProps) {
             <input
               type="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
+              ref={emailRef}
+              autoComplete="username"
               required
               style={styles.input}
             />
@@ -94,8 +94,8 @@ export function Auth({ onSuccess }: AuthProps) {
             <input
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              ref={passwordRef}
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
               required
               minLength={8}
               style={styles.input}
@@ -111,6 +111,10 @@ export function Auth({ onSuccess }: AuthProps) {
           onClick={() => {
             setIsLogin(!isLogin);
             setError(null);
+            setName('');
+            // Clear uncontrolled inputs
+            if (emailRef.current) emailRef.current.value = '';
+            if (passwordRef.current) passwordRef.current.value = '';
           }}
           style={styles.toggle}
         >

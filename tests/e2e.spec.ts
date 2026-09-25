@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:6544';
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://knowledge-ask-api.onrender.com';
 
 async function checkApiAvailable(): Promise<boolean> {
   try {
@@ -15,15 +15,6 @@ async function checkApiAvailable(): Promise<boolean> {
 }
 
 test.describe('Knowledge Ask E2E Tests', () => {
-  let apiAvailable: boolean;
-
-  test.beforeAll(async () => {
-    apiAvailable = await checkApiAvailable();
-    if (!apiAvailable) {
-      console.log('⚠️  API not available, tests will be skipped gracefully');
-    }
-  });
-
   test('should load the login page', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Knowledge Ask' })).toBeVisible();
@@ -50,8 +41,12 @@ test.describe('Knowledge Ask E2E Tests', () => {
     await expect(page.locator('input[name="email"]:invalid')).toBeVisible();
   });
 
-  test.skip(!apiAvailable, 'should complete full user journey: register → upload → ask → download');
   test('should complete full user journey: register → upload → ask → download', async ({ page }) => {
+    const apiAvailable = await checkApiAvailable();
+    if (!apiAvailable) {
+      test.skip(true, 'API not available');
+    }
+
     const timestamp = Date.now();
     const testUser = {
       name: 'Test User',
@@ -131,8 +126,12 @@ This document contains valuable information for RAG-based question answering.
     await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
   });
 
-  test.skip(!apiAvailable, 'should handle invalid login credentials');
   test('should handle invalid login credentials', async ({ page }) => {
+    const apiAvailable = await checkApiAvailable();
+    if (!apiAvailable) {
+      test.skip(true, 'API not available');
+    }
+
     await page.goto('/');
     
     await page.fill('input[name="email"]', 'nonexistent@example.com');
@@ -142,8 +141,12 @@ This document contains valuable information for RAG-based question answering.
     await expect(page.locator('text=Invalid')).toBeVisible({ timeout: 10000 });
   });
 
-  test.skip(!apiAvailable, 'should handle file upload errors gracefully');
   test('should handle file upload errors gracefully', async ({ page }) => {
+    const apiAvailable = await checkApiAvailable();
+    if (!apiAvailable) {
+      test.skip(true, 'API not available');
+    }
+
     const timestamp = Date.now();
     const testUser = {
       name: 'Upload Test User',

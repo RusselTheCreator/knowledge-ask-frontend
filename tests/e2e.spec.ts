@@ -81,7 +81,8 @@ This document contains valuable information for RAG-based question answering.
 `;
 
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByText('Click to upload').click();
+    // Click the dropzone container div instead of the text to avoid pointer-events: none issue
+    await page.locator('div').filter({ hasText: /^Click to upload or drag and drop/ }).first().click();
     const fileChooser = await fileChooserPromise;
     
     await fileChooser.setFiles({
@@ -166,7 +167,8 @@ This document contains valuable information for RAG-based question answering.
     const hugeContent = 'x'.repeat(15 * 1024 * 1024);
     
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.getByText('Click to upload').click();
+    // Click the dropzone container div instead of the text to avoid pointer-events: none issue
+    await page.locator('div').filter({ hasText: /^Click to upload or drag and drop/ }).first().click();
     const fileChooser = await fileChooserPromise;
     
     await fileChooser.setFiles({

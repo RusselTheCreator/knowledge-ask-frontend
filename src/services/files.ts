@@ -1,23 +1,7 @@
 import { api } from './api';
 import type { File } from '../types';
 
-// Backend returns snake_case, frontend expects camelCase
-interface BackendFileResponse {
-  id: number;
-  original_name: string;
-  mime_type: string;
-  size_bytes: number;
-  status: string;
-  created_at: string;
-  chunk_count?: string;
-}
-
-interface BackendFileListResponse {
-  message: string;
-  count: number;
-  files: BackendFileResponse[];
-}
-
+// Backend returns snake_case, frontend expects camelCase - transform to frontend format
 function transformBackendFile(backendFile: any): File {
   return {
     id: backendFile.id,

@@ -60,6 +60,15 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
     <div style={styles.container}>
       {error && <div style={styles.error}>{error}</div>}
       
+      <input
+        ref={fileInputRef}
+        type="file"
+        onChange={handleChange}
+        disabled={loading}
+        style={styles.fileInput}
+        accept=".pdf,.txt,.md,.docx,.csv"
+      />
+      
       <div
         style={{
           ...styles.dropzone,
@@ -72,33 +81,22 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
         onDrop={handleDrop}
         onClick={() => !loading && fileInputRef.current?.click()}
       >
-        <input
-          ref={fileInputRef}
-          type="file"
-          onChange={handleChange}
-          disabled={loading}
-          style={styles.fileInput}
-          accept=".pdf,.txt,.md,.docx,.csv"
-        />
+        <svg style={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
         
-        <div style={styles.dropzoneContent}>
-          <svg style={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-          </svg>
-          
-          {loading ? (
-            <p style={styles.text}>Uploading...</p>
-          ) : (
-            <>
-              <p style={styles.text}>
-                <strong>Click to upload</strong> or drag and drop
-              </p>
-              <p style={styles.subtext}>
-                PDF, TXT, MD, DOCX, or CSV (max 10MB)
-              </p>
-            </>
-          )}
-        </div>
+        {loading ? (
+          <p style={styles.text}>Uploading...</p>
+        ) : (
+          <>
+            <p style={styles.text}>
+              <strong>Click to upload</strong> or drag and drop
+            </p>
+            <p style={styles.subtext}>
+              PDF, TXT, MD, DOCX, or CSV (max 10MB)
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
@@ -135,9 +133,6 @@ const styles = {
   },
   fileInput: {
     display: 'none',
-  },
-  dropzoneContent: {
-    pointerEvents: 'none' as const,
   },
   icon: {
     width: '48px',

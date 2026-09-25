@@ -2,11 +2,10 @@ import { api } from './api';
 import type { AuthResponse, LoginRequest, RegisterRequest, User } from '../types';
 
 export const authService = {
-  register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/api/authentication/register', data);
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    return response;
+  register: async (data: RegisterRequest): Promise<void> => {
+    // Backend register endpoint doesn't return token, only {message, user}
+    await api.post<{message: string, user: User}>('/api/authentication/register', data);
+    // Token will be obtained via subsequent login call
   },
 
   login: async (data: LoginRequest): Promise<AuthResponse> => {

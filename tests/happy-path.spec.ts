@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://knowledge-ask-api.onrender.com';
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://knowledge-ask-api-v2-fixed.onrender.com';
 
 test('Happy Path: Complete user journey on staging', async ({ page }) => {
   // Use unique timestamp to avoid rate limit issues with same email

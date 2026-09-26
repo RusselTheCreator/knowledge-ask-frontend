@@ -54,6 +54,51 @@ export interface Ask {
   userId: number;
 }
 
+export interface AskApiResponse {
+  message: string;
+  answer: string;
+  askId: number;
+  sources: {
+    fileId: number;
+    fileName: string;
+    chunkId: number;
+    relevanceScore: number;
+    excerpt: string;
+  }[];
+}
+
+export interface HistoryApiResponse {
+  message: string;
+  count: number;
+  asks: {
+    id: number;
+    question: string;
+    answer: string;
+    status: string;
+    error_message: string | null;
+    created_at: string;
+  }[];
+}
+
+export interface AskByIdApiResponse {
+  message: string;
+  ask: {
+    id: number;
+    question: string;
+    answer: string;
+    status: string;
+    errorMessage: string | null;
+    createdAt: string;
+    sources: {
+      file_id: number;
+      file_name: string;
+      chunk_id: number;
+      relevance_score: number;
+      chunk_excerpt: string;
+    }[];
+  };
+}
+
 export interface ApiError {
   error: string;
   details?: string;

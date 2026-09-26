@@ -13,6 +13,7 @@ function transformBackendFile(backendFile: any): File {
     status: (backendFile.status === 'error' ? 'failed' : backendFile.status) as File['status'],
     chunkCount: backendFile.chunkCount || parseInt(backendFile.chunk_count || '0'),
     userId: backendFile.userId || backendFile.user_id || 0,
+    errorMessage: backendFile.errorMessage || backendFile.error_message || undefined,
   };
 }
 

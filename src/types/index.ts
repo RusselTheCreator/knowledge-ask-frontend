@@ -77,7 +77,8 @@ export interface HistoryApiResponse {
     answer: string;
     status: string;
     error_message: string | null;
-    created_at: string;
+    createdAt: string;
+    created_at?: string;
   }[];
 }
 

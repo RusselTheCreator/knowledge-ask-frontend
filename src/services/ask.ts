@@ -47,7 +47,7 @@ export const askService = {
           question: ask.question,
           answer: ask.answer,
           sources: [], // History endpoint doesn't include sources
-          createdAt: ask.created_at, // Map snake_case to camelCase
+          createdAt: ask.createdAt ?? ask.created_at, // Support both camelCase and snake_case for transition
           userId: 0, // Not provided by API
         }));
       }

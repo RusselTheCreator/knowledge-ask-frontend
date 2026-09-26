@@ -141,7 +141,8 @@ Machine learning became popular in the 2000s.
     page.once('dialog', dialog => dialog.accept());
     await deleteButton.click();
 
-    await expect(page.getByText('ai-test.txt')).not.toBeVisible({ timeout: 10000 });
+    // Check file is removed from file list (use heading to be specific, not answer text)
+    await expect(page.getByRole('heading', { name: 'ai-test.txt' })).not.toBeVisible({ timeout: 10000 });
 
     console.log('✓ File deleted');
     console.log('\n✅ LIVE API CONTRACT TEST COMPLETE - All assertions passed!');

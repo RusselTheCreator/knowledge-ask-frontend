@@ -10,21 +10,31 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = async (file: File) => {
+  const handleFiles = async (files: FileList) => {
     setError(null);
     setLoading(true);
-
+    const fileArray = Array.from(files);
+    const totalFiles = fileArray.length;
+    
     try {
-      await filesService.upload(file);
+      for (let i = 0; i < fileArray.length; i++) {
+        const file = fileArray[i];
+        setUploadProgress(`Uploading ${i + 1} of ${totalFiles}: ${file.name}`);
+        await filesService.upload(file);
+      }
+      
       onSuccess();
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+      setUploadProgress('');
     } catch (err) {
       const apiError = err as ApiError;
       setError(apiError.message || 'Upload failed');
+      setUploadProgress('');
     } finally {
       setLoading(false);
     }
@@ -45,14 +55,14 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files);
     }
   };
 
@@ -63,6 +73,7 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
       <input
         ref={fileInputRef}
         type="file"
+        multiple
         onChange={handleChange}
         disabled={loading}
         style={styles.fileInput}
@@ -86,17 +97,20 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
         </svg>
         
         {loading ? (
-          <p style={styles.text}>Uploading...</p>
+          <>
+            <p style={styles.text}>Uploading...</p>
+            {uploadProgress && <p style={styles.subtext}>{uploadProgress}</p>}
+          </>
         ) : (
           <>
             <p style={styles.text}>
               <strong>Click to upload</strong> or drag and drop
             </p>
             <p style={styles.subtext}>
-              PDF, TXT, MD, DOCX, CSV, XLSX (max 10MB)
+              PDF, TXT, MD, DOCX, CSV, XLSX (max 10MB per file)
             </p>
             <p style={{ ...styles.subtext, fontSize: '12px', marginTop: '4px' }}>
-              Images (PNG, JPG) not yet supported for processing
+              Multiple files supported • Images (PNG, JPG) not yet supported for processing
             </p>
           </>
         )}

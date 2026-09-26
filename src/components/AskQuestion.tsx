@@ -95,7 +95,15 @@ export function AskQuestion() {
                           <div style={styles.sourceHeader}>
                             <span style={styles.sourceName}>{source.filename}</span>
                             <span style={styles.similarity}>
-                              {Math.round(source.similarity * 100)}% match
+                              {(() => {
+                                const similarity = source.similarity;
+                                if (typeof similarity !== 'number' || isNaN(similarity)) {
+                                  return '—';
+                                }
+                                const percentage = Math.round(similarity * 100);
+                                const clamped = Math.max(0, Math.min(100, percentage));
+                                return `${clamped}% match`;
+                              })()}
                             </span>
                           </div>
                           <p style={styles.sourceText}>{source.chunkText}</p>

@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { filesService } from '../services/files';
-import type { ApiError } from '../services/api';
 
 interface FileUploadProps {
   onSuccess: () => void;
@@ -18,25 +17,46 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
     setLoading(true);
     const fileArray = Array.from(files);
     const totalFiles = fileArray.length;
+    const errors: string[] = [];
+    let successCount = 0;
     
-    try {
-      for (let i = 0; i < fileArray.length; i++) {
-        const file = fileArray[i];
-        setUploadProgress(`Uploading ${i + 1} of ${totalFiles}: ${file.name}`);
-        await filesService.upload(file);
-      }
+    // Process files sequentially with per-file error handling
+    for (let i = 0; i < fileArray.length; i++) {
+      const file = fileArray[i];
+      setUploadProgress(`Uploading ${i + 1} of ${totalFiles}: ${file.name}`);
       
-      onSuccess();
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      try {
+        await filesService.upload(file);
+        successCount++;
+      } catch (err) {
+        // Extract the actual error message from API response
+        let errorMessage = 'Upload failed';
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        } else if (typeof err === 'object' && err !== null) {
+          const apiErr = err as any;
+          errorMessage = apiErr.message || apiErr.error || 'Upload failed';
+        }
+        // Show filename and actual API error message
+        const errorMsg = `${file.name}: ${errorMessage}`;
+        errors.push(errorMsg);
       }
-      setUploadProgress('');
-    } catch (err) {
-      const apiError = err as ApiError;
-      setError(apiError.message || 'Upload failed');
-      setUploadProgress('');
-    } finally {
-      setLoading(false);
+    }
+    
+    setLoading(false);
+    setUploadProgress('');
+    
+    // Display errors if any, but still call onSuccess if at least one succeeded
+    if (errors.length > 0) {
+      setError(errors.join('\n'));
+    }
+    
+    if (successCount > 0) {
+      onSuccess();
+    }
+    
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -130,6 +150,7 @@ const styles = {
     borderRadius: '6px',
     marginBottom: '16px',
     fontSize: '14px',
+    whiteSpace: 'pre-wrap' as const,
   },
   dropzone: {
     border: '2px dashed #ddd',

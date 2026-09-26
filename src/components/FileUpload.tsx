@@ -66,7 +66,7 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
         onChange={handleChange}
         disabled={loading}
         style={styles.fileInput}
-        accept=".pdf,.txt,.md,.docx,.csv"
+        accept=".pdf,.txt,.md,.docx,.csv,.xlsx,.png,.jpg,.jpeg"
       />
       
       <div
@@ -93,7 +93,10 @@ export function FileUpload({ onSuccess }: FileUploadProps) {
               <strong>Click to upload</strong> or drag and drop
             </p>
             <p style={styles.subtext}>
-              PDF, TXT, MD, DOCX, or CSV (max 10MB)
+              PDF, TXT, MD, DOCX, CSV, XLSX (max 10MB)
+            </p>
+            <p style={{ ...styles.subtext, fontSize: '12px', marginTop: '4px' }}>
+              Images (PNG, JPG) not yet supported for processing
             </p>
           </>
         )}

@@ -82,7 +82,8 @@ export function FileList({ refresh }: FileListProps) {
     switch (status) {
       case 'completed': return '#28a745';
       case 'processing': return '#ffc107';
-      case 'failed': return '#dc3545';
+      case 'failed':
+      case 'error': return '#dc3545';
       default: return '#6c757d';
     }
   };
@@ -115,6 +116,11 @@ export function FileList({ refresh }: FileListProps) {
                   <span style={styles.metaText}>{formatBytes(file.size)}</span>
                   <span style={styles.metaText}>{file.chunkCount} chunks</span>
                 </div>
+                {(file.status === 'failed' || file.status === 'error') && file.errorMessage && (
+                  <div style={styles.errorMessage}>
+                    {file.errorMessage}
+                  </div>
+                )}
               </div>
             </div>
             
@@ -222,5 +228,14 @@ const styles = {
   deleteButton: {
     borderColor: '#dc3545',
     color: '#dc3545',
+  },
+  errorMessage: {
+    marginTop: '8px',
+    padding: '8px',
+    background: '#fee',
+    color: '#c33',
+    fontSize: '12px',
+    borderRadius: '4px',
+    wordBreak: 'break-word' as const,
   },
 };

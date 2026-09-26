@@ -28,9 +28,10 @@ export interface File {
   mimeType: string;
   size: number;
   uploadedAt: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'error';
   chunkCount: number;
   userId: number;
+  errorMessage?: string;
 }
 
 export interface AskRequest {
